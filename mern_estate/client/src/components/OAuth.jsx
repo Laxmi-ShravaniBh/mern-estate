@@ -28,6 +28,7 @@ export default function OAuth() {
             })
           });
           const data = await res.json();
+          console.log('User data from Google auth:', data); // Debug log
           dispatch(signInSuccess(data));
           navigate('/');
         

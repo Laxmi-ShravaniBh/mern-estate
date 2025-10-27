@@ -1,7 +1,11 @@
 import {FaSearch} from "react-icons/fa"
 import {Link} from "react-router-dom"
+import {useSelector} from "react-redux"
 
 export default function Header() {
+    const { currentUser } = useSelector((state) => state.user);
+    console.log('Header - currentUser:', currentUser); // Debug log
+    console.log('Header - avatar URL:', currentUser?.avatar); // Debug log
   return (
     <header className= 'bg-slate-200 shadow-md'>
         <div className='flex justify-between items-center max-w-6xl mx-auto p-3'>
@@ -23,8 +27,31 @@ export default function Header() {
                 <Link to="/about">
                     <li className="hidden sm:inline text-slate-700 hover:underline">About</li>
                 </Link>
-                <Link to="/sign-in">
-                    <li className="text-slate-700 hover:underline">Sign In</li>
+                <Link to="/profile">
+                    {currentUser ? (
+                        <div className="relative group">
+                            <img
+                                className='rounded-full h-8 w-8 object-cover cursor-pointer'
+                                src={currentUser.avatar}
+                                alt="profile"
+                                onError={(e) => {
+                                    e.target.style.display = 'none';
+                                    e.target.nextSibling.style.display = 'flex';
+                                }}
+                            />
+                            <div
+                                className="absolute inset-0 rounded-full h-8 w-8 bg-slate-700 text-white flex items-center justify-center cursor-pointer hover:bg-slate-600"
+                                style={{display: 'none'}}
+                            >
+                                {currentUser.username ? currentUser.username.charAt(0).toUpperCase() : 'U'}
+                            </div>
+                            <span className="hidden group-hover:block absolute top-full right-0 mt-1 px-2 py-1 bg-black text-white text-sm rounded whitespace-nowrap z-10">
+                                Profile
+                            </span>
+                        </div>
+                    ) : (
+                        <li className="text-slate-700 hover:underline">Sign In</li>
+                    )}
                 </Link>
             </ul>
         </div>
