@@ -1,44 +1,74 @@
-import React from 'react'
-import { GoogleAuthProvider, getAuth, signInWithPopup } from 'firebase/auth';
-import { app } from '../firebase';
+import { supabase } from '../supabase';
 import { useDispatch } from 'react-redux';
 import { signInSuccess } from '../redux/user/userSlice';
 import { useNavigate } from 'react-router-dom';
-
+import { useEffect } from 'react';
 
 export default function OAuth() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const handleGoogleClick = async () => {
-    try { 
-        const provider = new GoogleAuthProvider();
-        const auth = getAuth(app);
 
-        const result = await signInWithPopup(auth, provider);
+  useEffect(() => {
+    // Listen for auth state changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+      if (event === 'SIGNED_IN' && session?.user) {
+        await handleAuthSuccess(session.user);
+      }
+    });
 
-        const res = await fetch('/api/auth/google', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                email: result.user.email,
-                name: result.user.displayName,
-                photo: result.user.photoURL
-            })
-          });
-          const data = await res.json();
-          console.log('User data from Google auth:', data); // Debug log
-          dispatch(signInSuccess(data));
-          navigate('/');
-        
+    return () => subscription.unsubscribe();
+  }, [dispatch, navigate]);
+
+  const handleAuthSuccess = async (user) => {
+    try {
+      const res = await fetch('/api/auth/google', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          email: user.email,
+          name: user.user_metadata?.full_name || user.user_metadata?.name,
+          photo: user.user_metadata?.avatar_url || user.user_metadata?.picture
+        })
+      });
+
+      if (!res.ok) {
+        throw new Error('Failed to authenticate with backend');
+      }
+
+      const data = await res.json();
+      dispatch(signInSuccess(data));
+      navigate('/');
     } catch (error) {
-      console.log('could not sign in with google', error);
+      console.log('Could not complete authentication:', error);
     }
-    
   };
+
+  const handleGoogleClick = async () => {
+    try {
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo: `${window.location.origin}/`
+        }
+      });
+
+      if (error) {
+        console.log('Error signing in with Google:', error);
+      }
+    } catch (error) {
+      console.log('Could not sign in with Google:', error);
+    }
+  };
+
   return (
-    <button onClick={handleGoogleClick}
-    type='button' className='bg-red-700 text-white p-3 rounded-lg uppercase hover:opacity-95'> Sign In with Google </button> 
-  )
+    <button
+      onClick={handleGoogleClick}
+      type='button'
+      className='bg-red-700 text-white p-3 rounded-lg uppercase hover:opacity-95'
+    >
+      Continue with Google
+    </button>
+  );
 }
