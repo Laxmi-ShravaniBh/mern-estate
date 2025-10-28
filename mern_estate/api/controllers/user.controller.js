@@ -46,4 +46,15 @@ export const updateUser = async (req, res, next) => {
     } catch (error) {
         next(errorHandler(500, 'Failed to update user!'));
     }
+};
+
+export const deleteUser = async (req, res, next) => {
+    if (req.params.id !== req.user.id) 
+        return next(errorHandler(403, "You can't delete other users!"));
+    try {
+        await User.findByIdAndDelete(req.params.id);
+        res.clearCookie("access_token").status(200).json("User deleted successfully!");
+    } catch (error) {
+        next(errorHandler(500, 'Failed to delete user!'));
+    }
 }

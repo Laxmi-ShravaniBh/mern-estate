@@ -1,8 +1,9 @@
 import { useSelector } from "react-redux"
 import { useRef, useState, useEffect } from "react"
 import { uploadFile, getPublicUrl } from "../supabase"
-import { updateUserStart, updateUserSuccess, updateUserFailure } from "../redux/user/userSlice";
+import { updateUserStart, updateUserSuccess, updateUserFailure, deleteUserStart, deleteUserSuccess, deleteUserFailure, signOutSuccess } from "../redux/user/userSlice";
 import { useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
 
 export default function Profile() {
   const fileRef = useRef(null)
@@ -13,6 +14,7 @@ export default function Profile() {
   const [formData, setFormData] = useState({});
   const [uploading, setUploading] = useState(false);
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const [updateSuccess, setUpdateSuccess] = useState(false);
 ///console.log(formData);
 
@@ -113,6 +115,30 @@ export default function Profile() {
     }
   };
 
+  const handleDeleteUser = async () => {
+    try {
+      dispatch(deleteUserStart());
+      const res = await fetch(`/api/users/delete/${currentUser._id}`, {
+        method: 'DELETE',
+      });
+      const data = await res.json();
+      if (data.success === false){
+        dispatch(deleteUserFailure(data.message));
+        return;
+      }
+      dispatch(deleteUserSuccess(data));
+      dispatch(signOutSuccess());
+      navigate('/sign-in');
+    } catch (error) {
+      dispatch(deleteUserFailure(error.message));
+    }
+  };
+
+  const handleSignOut = () => {
+    dispatch(signOutSuccess());
+    navigate('/sign-in');
+  };
+
   return (
     <div className='p-3 max-w-lg mx-auto'>
       <h1 className='text-3xl font-semibold text-center my-7'>Profile</h1>
@@ -125,12 +151,26 @@ export default function Profile() {
         <form onSubmit={handleSubmit} className='flex flex-col gap-4'>
           {/* Avatar Upload Section */}
           <div className="flex flex-col items-center gap-2">
-            <img
-              onClick={() => fileRef.current.click()}
-              src={formData.avatar || currentUser?.avatar || 'https://via.placeholder.com/96x96?text=No+Image'}
-              alt='profile'
-              className='rounded-full h-24 w-24 object-cover cursor-pointer self-center mt-2 hover:opacity-80'
-            />
+            <div className="relative mt-2 h-24 w-24 overflow-hidden">
+              <img
+                onClick={() => fileRef.current.click()}
+                src={formData.avatar || currentUser?.avatar || 'https://picsum.photos/96/96?blur'}
+                alt='profile'
+                className='rounded-full h-24 w-24 object-cover cursor-pointer hover:opacity-80'
+                crossOrigin="anonymous"
+                onError={(e) => {
+                  e.target.style.display = 'none';
+                  e.target.nextSibling.style.display = 'flex';
+                }}
+              />
+              <div
+                className="absolute inset-0 rounded-full h-24 w-24 bg-slate-700 text-white flex items-center justify-center cursor-pointer hover:bg-slate-600"
+                style={{display: 'none'}}
+                onClick={() => fileRef.current.click()}
+              >
+                {currentUser?.username ? currentUser.username.charAt(0).toUpperCase() : 'U'}
+              </div>
+            </div>
             <input
               onChange={(e) => setFile(e.target.files[0])}
               type='file' 
@@ -191,8 +231,8 @@ export default function Profile() {
       )}
 
       <div className="flex justify-between mt-5">
-        <span className="text-red-700 cursor-pointer"> Delete account </span>
-        <span className="text-red-700 cursor-pointer"> Sign out </span>
+        <span onClick={handleDeleteUser} className="text-red-700 cursor-pointer"> Delete account </span>
+        <span onClick={handleSignOut} className="text-red-700 cursor-pointer"> Sign out </span>
       </div>
       {error && <p className="text-red-700 mt-5">{error}</p>}
       {updateSuccess && <p className="text-green-700 mt-5">Profile updated successfully!</p>}

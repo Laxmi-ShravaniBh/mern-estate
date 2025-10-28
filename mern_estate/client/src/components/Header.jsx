@@ -8,9 +8,9 @@ export default function Header() {
     console.log('Header - avatar URL:', currentUser?.avatar); // Debug log
   return (
     <header className= 'bg-slate-200 shadow-md'>
-        <div className='flex justify-between items-center max-w-6xl mx-auto p-3'>
+        <div className='flex justify-between items-center max-w-8xl mx-auto p-5'>
             <Link to="/">
-                <h1 className='font-bold text-[8px] sm:text-sm ml-2 flex flex-wrap'> 
+                <h1 className='font-bold text-[4px] sm:text-sm ml-10 flex flex-wrap'> 
                     <span className='text-slate-500'>Harry</span>
                     <span className='text-slate-700'>Estate</span>
                 </h1>
@@ -20,7 +20,7 @@ export default function Header() {
                 className='bg-transparent focus:outline-none w-20 sm:w-64' /> 
                 <FaSearch className="text-slate-600" />
             </form>
-            <ul className="flex gap-4 items-center">
+            <ul className="flex gap-6 items-center mr-10">
                 <Link to="/">
                     <li className="hidden sm:inline text-slate-700 hover:underline">Home</li>
                 </Link>
@@ -29,11 +29,13 @@ export default function Header() {
                 </Link>
                 <Link to="/profile">
                     {currentUser ? (
-                        <div className="relative group flex items-center">
+                        <li className="relative group list-none h-7 w-7 sm:h-8 sm:w-8">
                             <img
                                 className='rounded-full h-7 w-7 sm:h-8 sm:w-8 object-cover cursor-pointer'
                                 src={currentUser.avatar}
                                 alt="profile"
+                                crossOrigin="anonymous"
+                                style={{ verticalAlign: 'middle' }}
                                 onError={(e) => {
                                     e.target.style.display = 'none';
                                     e.target.nextSibling.style.display = 'flex';
@@ -41,14 +43,14 @@ export default function Header() {
                             />
                             <div
                                 className="absolute inset-0 rounded-full h-7 w-7 sm:h-8 sm:w-8 bg-slate-700 text-white flex items-center justify-center cursor-pointer hover:bg-slate-600"
-                                style={{display: 'none'}}
+                                style={{display: 'none', verticalAlign: 'middle'}}
                             >
                                 {currentUser.username ? currentUser.username.charAt(0).toUpperCase() : 'U'}
                             </div>
                             <span className="hidden group-hover:block absolute top-full right-0 mt-1 px-2 py-1 bg-black text-white text-sm rounded whitespace-nowrap z-10">
                                 Profile
                             </span>
-                        </div>
+                        </li>
                     ) : (
                         <li className="text-slate-700 hover:underline">Sign In</li>
                     )}
