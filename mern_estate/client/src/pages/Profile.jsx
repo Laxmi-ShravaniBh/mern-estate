@@ -1,15 +1,20 @@
 import { useSelector } from "react-redux"
 import { useRef, useState, useEffect } from "react"
 import { uploadFile, getPublicUrl } from "../supabase"
+import { updateUserStart, updateUserSuccess, updateUserFailure } from "../redux/user/userSlice";
+import { useDispatch } from "react-redux";
 
 export default function Profile() {
   const fileRef = useRef(null)
-  const currentUser = useSelector((state) => state.user.currentUser);
+  const {currentUser, loading, error} = useSelector((state) => state.user);
   const [file, setFile] = useState(undefined);
   const [filePerc, setFilePerc] = useState(0); // Progress percentage
   const [fileUploadError, setFileUploadError] = useState(false);
   const [formData, setFormData] = useState({});
   const [uploading, setUploading] = useState(false);
+  const dispatch = useDispatch();
+  const [updateSuccess, setUpdateSuccess] = useState(false);
+///console.log(formData);
 
   useEffect(() => {
     if (file) {
@@ -80,6 +85,34 @@ export default function Profile() {
     }
   };
 
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.id]: e.target.value });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      dispatch(updateUserStart());
+      const res = await fetch(`/api/users/update/${currentUser._id}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+        credentials: 'include', // Send cookies with JWT token
+      });
+      const data = await res.json();
+      if (data.success === false){
+        dispatch(updateUserFailure(data.message));
+        return;
+      }
+      dispatch(updateUserSuccess(data));
+      setUpdateSuccess(true);
+    } catch (error) {
+      dispatch(updateUserFailure(error.message));
+    }
+  };
+
   return (
     <div className='p-3 max-w-lg mx-auto'>
       <h1 className='text-3xl font-semibold text-center my-7'>Profile</h1>
@@ -89,7 +122,7 @@ export default function Profile() {
           <p className="text-gray-600">Please sign in to view your profile.</p>
         </div>
       ) : (
-        <form className='flex flex-col gap-4'>
+        <form onSubmit={handleSubmit} className='flex flex-col gap-4'>
           {/* Avatar Upload Section */}
           <div className="flex flex-col items-center gap-2">
             <img
@@ -100,7 +133,7 @@ export default function Profile() {
             />
             <input
               onChange={(e) => setFile(e.target.files[0])}
-              type='file'
+              type='file' 
               ref={fileRef}
               hidden
               accept='image/*'
@@ -126,33 +159,33 @@ export default function Profile() {
 
           <input
             type='text'
-            placeholder='username'
+            placeholder='Username'
             id='username'
             value={formData.username || ''}
-            onChange={(e) => setFormData({ ...formData, username: e.target.value })}
+            onChange={handleChange}
             className='border p-3 rounded-lg'
           />
           <input
             type='email'
-            placeholder='email'
+            placeholder='Email'
             id='email'
             value={formData.email || ''}
-            onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+            onChange={handleChange}
             className='border p-3 rounded-lg'
           />
           <input
             type='password'
-            placeholder='password'
+            placeholder='Password'
             id='password'
-            onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+            onChange={handleChange}
             className='border p-3 rounded-lg'
           />
           <button
-            type="button"
-            disabled={uploading}
+            type="submit"
+            disabled={loading}
             className="bg-slate-700 text-white rounded-lg p-3 uppercase hover:opacity-95 disabled:opacity-80"
           >
-            {uploading ? 'Updating...' : 'Update Profile'}
+            {loading ? 'Updating...' : 'Update Profile'}
           </button>
         </form>
       )}
@@ -161,6 +194,8 @@ export default function Profile() {
         <span className="text-red-700 cursor-pointer"> Delete account </span>
         <span className="text-red-700 cursor-pointer"> Sign out </span>
       </div>
+      {error && <p className="text-red-700 mt-5">{error}</p>}
+      {updateSuccess && <p className="text-green-700 mt-5">Profile updated successfully!</p>}
     </div>
   )
 }
