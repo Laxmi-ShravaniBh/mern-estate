@@ -1,7 +1,7 @@
 import { useSelector } from "react-redux"
 import { useRef, useState, useEffect } from "react"
 import { uploadFile, getPublicUrl } from "../supabase"
-import { updateUserStart, updateUserSuccess, updateUserFailure, deleteUserStart, deleteUserSuccess, deleteUserFailure, signOutSuccess } from "../redux/user/userSlice";
+import { updateUserStart, updateUserSuccess, updateUserFailure, deleteUserStart, deleteUserSuccess, deleteUserFailure, signOutUserSuccess, signOutUserStart, signOutUserFailure } from "../redux/user/userSlice";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 
@@ -134,10 +134,21 @@ export default function Profile() {
     }
   };
 
-  const handleSignOut = () => {
-    dispatch(signOutSuccess());
-    navigate('/sign-in');
-  };
+  const handleSignOut = async() => {
+    try {
+      dispatch(signOutUserStart());
+      const res = await fetch(`/api/auth/signout`);
+      const data = await res.json();
+      if (data.success === false){
+        dispatch(signOutUserFailure(data.message));
+        return;
+      }
+      dispatch(signOutUserSuccess(data));
+      navigate('/sign-in');
+    } catch (error) {
+      dispatch(signOutUserFailure(error.message));
+    }
+  }
 
   return (
     <div className='p-3 max-w-lg mx-auto'>
