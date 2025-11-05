@@ -116,6 +116,7 @@ export default function Profile() {
   };
 
   const handleDeleteUser = async () => {
+    if (!window.confirm("Are you sure you want to delete your account? This action cannot be undone.")) return;
     try {
       dispatch(deleteUserStart());
       const res = await fetch(`/api/users/delete/${currentUser._id}`, {
@@ -127,7 +128,7 @@ export default function Profile() {
         return;
       }
       dispatch(deleteUserSuccess(data));
-      dispatch(signOutSuccess());
+      dispatch(signOutUserSuccess());
       navigate('/sign-in');
     } catch (error) {
       dispatch(deleteUserFailure(error.message));

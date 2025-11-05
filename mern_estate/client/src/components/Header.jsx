@@ -33,7 +33,7 @@ export default function Header() {
                             <img
                                 className='rounded-full h-7 w-7 sm:h-8 sm:w-8 object-cover cursor-pointer'
                                 src={currentUser.avatar}
-                                alt="profile"
+                                alt="Profile"
                                 crossOrigin="anonymous"
                                 style={{ verticalAlign: 'middle' }}
                                 onError={(e) => {
