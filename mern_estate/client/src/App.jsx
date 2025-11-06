@@ -10,6 +10,7 @@ import PrivateRoute from './components/PrivateRoute'
 import { supabase } from './supabase'
 import { useDispatch } from 'react-redux'
 import { signInSuccess } from './redux/user/userSlice'
+import CreateListing from './pages/CreateListing'
 
 export default function App() {
   const dispatch = useDispatch()
@@ -76,6 +77,7 @@ export default function App() {
       <Route path="/about" element={<About/>} />
       <Route element={<PrivateRoute/>}>
         <Route path="/profile" element={<Profile/>} />
+        <Route path="/create-listing" element={<CreateListing/>} />
       </Route>
     </Routes>
   </BrowserRouter>

@@ -4,6 +4,7 @@ import { uploadFile, getPublicUrl } from "../supabase"
 import { updateUserStart, updateUserSuccess, updateUserFailure, deleteUserStart, deleteUserSuccess, deleteUserFailure, signOutUserSuccess, signOutUserStart, signOutUserFailure } from "../redux/user/userSlice";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 export default function Profile() {
   const fileRef = useRef(null)
@@ -215,7 +216,7 @@ export default function Profile() {
             id='username'
             value={formData.username || ''}
             onChange={handleChange}
-            className='border p-3 rounded-lg'
+            className='border p-3 rounded-lg text-black'
           />
           <input
             type='email'
@@ -223,14 +224,14 @@ export default function Profile() {
             id='email'
             value={formData.email || ''}
             onChange={handleChange}
-            className='border p-3 rounded-lg'
+            className='border p-3 rounded-lg text-black'
           />
           <input
             type='password'
             placeholder='Password'
             id='password'
             onChange={handleChange}
-            className='border p-3 rounded-lg'
+            className='border p-3 rounded-lg text-black'
           />
           <button
             type="submit"
@@ -239,6 +240,9 @@ export default function Profile() {
           >
             {loading ? 'Updating...' : 'Update Profile'}
           </button>
+          <Link className='bg-green-700 !text-white rounded-lg p-3 uppercase hover:opacity-95 text-center' to={"/create-listing"}>
+            Create Listing
+          </Link>
         </form>
       )}
 
