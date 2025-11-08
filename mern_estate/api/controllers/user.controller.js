@@ -1,5 +1,6 @@
 import User from "../models/user.model.js";
 import bcryptjs from "bcryptjs";
+import Listing from "../models/listing.model.js";
 import { errorHandler } from "../utils/error.js";
 
 export const getUser = async (req, res, next) => {
@@ -58,3 +59,20 @@ export const deleteUser = async (req, res, next) => {
         next(errorHandler(500, 'Failed to delete user!'));
     }
 }
+
+export const getUserListings = async (req, res, next) => {
+    console.log('req.params.id:', req.params.id);
+    console.log('req.user.id:', req.user.id);
+    if (req.params.id === req.user.id) {
+        try {
+            const listings = await Listing.find({ userRef: req.params.id });
+            console.log('Found listings:', listings.length);
+            res.status(200).json(listings);
+        } catch (error) {
+            console.error('Error fetching listings:', error);
+            next(error);
+        }
+    } else {
+        next(errorHandler(401, "You can't get other users' listings!"));
+    }
+};
