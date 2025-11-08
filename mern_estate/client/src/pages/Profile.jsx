@@ -182,6 +182,24 @@ export default function Profile() {
     setShowListings(!showListings);
   };
 
+  const handleDeleteListing = async (listingId) => {
+    if (!window.confirm("Are you sure you want to delete this listing?")) return;
+    try {
+      const res = await fetch(`/api/listing/delete/${listingId}`, {
+        method: 'DELETE',
+        credentials: 'include',
+      });
+      const data = await res.json();
+      if (data.message === "Listing deleted successfully") {
+        setListings(listings.filter(listing => listing._id !== listingId));
+      } else {
+        alert("Failed to delete listing");
+      }
+    } catch (error) {
+      alert("Error deleting listing");
+    }
+  };
+
   return (
     <div className='p-3 max-w-lg mx-auto'>
       <h1 className='text-3xl font-semibold text-center my-7'>Profile</h1>
@@ -304,7 +322,7 @@ export default function Profile() {
                   </div>
                   <div className="flex gap-2">
                     <button className="text-green-700"><Edit size={20} /></button>
-                    <button className="text-red-700"><Trash2 size={20} /></button>
+                    <button onClick={() => handleDeleteListing(listing._id)} className="text-red-700"><Trash2 size={20} /></button>
                   </div>
                 </div>
               ))}
