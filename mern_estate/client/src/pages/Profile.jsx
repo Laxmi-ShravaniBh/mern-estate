@@ -5,6 +5,7 @@ import { updateUserStart, updateUserSuccess, updateUserFailure, deleteUserStart,
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
+import { Edit, Trash2 } from 'lucide-react';
 
 export default function Profile() {
   const fileRef = useRef(null)
@@ -17,6 +18,10 @@ export default function Profile() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [updateSuccess, setUpdateSuccess] = useState(false);
+  const [listings, setListings] = useState([]);
+  const [listingsLoading, setListingsLoading] = useState(false);
+  const [listingsError, setListingsError] = useState(false);
+  const [showListings, setShowListings] = useState(false);
 ///console.log(formData);
 
   useEffect(() => {
@@ -152,6 +157,31 @@ export default function Profile() {
     }
   }
 
+  const handleGetListings = async () => {
+    if (listings.length === 0) {
+      try {
+        setListingsLoading(true);
+        setListingsError(false);
+        const res = await fetch(`/api/users/listings/${currentUser._id}`, {
+          method: 'GET',
+          credentials: 'include',
+        });
+        const data = await res.json();
+        if (data.success === false) {
+          setListingsError(true);
+          setListingsLoading(false);
+          return;
+        }
+        setListings(data);
+        setListingsLoading(false);
+      } catch (error) {
+        setListingsError(true);
+        setListingsLoading(false);
+      }
+    }
+    setShowListings(!showListings);
+  };
+
   return (
     <div className='p-3 max-w-lg mx-auto'>
       <h1 className='text-3xl font-semibold text-center my-7'>Profile</h1>
@@ -243,6 +273,11 @@ export default function Profile() {
           <Link className='bg-green-700 !text-white rounded-lg p-3 uppercase hover:opacity-95 text-center' to={"/create-listing"}>
             Create Listing
           </Link>
+          <div className="text-center mt-3">
+            <span onClick={handleGetListings} className="text-green-700 cursor-pointer">Get Listings</span>
+          </div>
+          {listingsLoading && <p className="text-gray-600 mt-5">Loading listings...</p>}
+          {listingsError && <p className="text-red-700 mt-5">Error fetching listings.</p>}
         </form>
       )}
 
@@ -252,6 +287,32 @@ export default function Profile() {
       </div>
       {error && <p className="text-red-700 mt-5">{error}</p>}
       {updateSuccess && <p className="text-green-700 mt-5">Profile updated successfully!</p>}
+      {showListings && (
+        <div className="mt-5">
+          {listingsLoading && <p className="text-gray-600">Loading listings...</p>}
+          {listingsError && <p className="text-red-700">Error fetching listings.</p>}
+          {listings.length > 0 && (
+            <>
+              <h2 className="text-2xl font-semibold mb-3">Your Listings</h2>
+              {listings.map((listing) => (
+                <div key={listing._id} className="border rounded-lg p-3 mb-3 flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    {listing.imageURLs && listing.imageURLs.length > 0 && (
+                      <img src={listing.imageURLs[0]} alt="listing" className="w-16 h-16 object-cover rounded" />
+                    )}
+                    <p className="font-medium truncate">{listing.name}</p>
+                  </div>
+                  <div className="flex gap-2">
+                    <button className="text-green-700"><Edit size={20} /></button>
+                    <button className="text-red-700"><Trash2 size={20} /></button>
+                  </div>
+                </div>
+              ))}
+            </>
+          )}
+        </div>
+      )}
     </div>
   )
 }
+
