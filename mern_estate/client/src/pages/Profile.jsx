@@ -321,7 +321,7 @@ export default function Profile() {
                     <p className="font-medium truncate">{listing.name}</p>
                   </div>
                   <div className="flex gap-2">
-                    <button className="text-green-700"><Edit size={20} /></button>
+                    <button onClick={() => navigate(`/update-listing/${listing._id}`)} className="text-green-700"><Edit size={20} /></button>
                     <button onClick={() => handleDeleteListing(listing._id)} className="text-red-700"><Trash2 size={20} /></button>
                   </div>
                 </div>
