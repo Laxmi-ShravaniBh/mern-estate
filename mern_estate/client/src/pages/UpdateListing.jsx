@@ -138,7 +138,7 @@ export default function UpdateListing() {
         setError(data.message);
         return;
       }
-      // navigate('/profile');
+      navigate(`/listing/${data._id}`);
     } catch (error) {
       setError(error.message);
       console.error("Fetch error:", error);
@@ -329,17 +329,18 @@ export default function UpdateListing() {
                     src={url}
                     alt={`Image ${index + 1}`}
                     className="w-20 h-20 sm:w-32 sm:h-32 object-cover rounded cursor-pointer"
-                    onClick={() => handleEnlarge(index)}
                     crossOrigin="anonymous"
                   />
                   <div className="absolute inset-1 bg-black/40 opacity-0 sm:group-hover:opacity-100 flex items-center justify-center gap-1 transition-opacity rounded">
                     <button
+                      type="button"
                       onClick={() => handleEnlarge(index)}
                       className="text-white hover:text-black hover:bg-white rounded p-1 transition-colors"
                     >
                       <Eye size={12} />
                     </button>
                     <button
+                      type="button"
                       onClick={() => handleDelete(index)}
                       className="text-white hover:text-black hover:bg-white rounded p-1 transition-colors"
                     >

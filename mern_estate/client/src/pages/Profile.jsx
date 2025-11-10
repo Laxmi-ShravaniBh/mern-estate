@@ -318,10 +318,12 @@ export default function Profile() {
                     {listing.imageURLs && listing.imageURLs.length > 0 && (
                       <img src={listing.imageURLs[0]} alt="listing" className="w-16 h-16 object-cover rounded" />
                     )}
-                    <p className="font-medium truncate">{listing.name}</p>
+                    <p className="font-medium break-words">{listing.name}</p>
                   </div>
                   <div className="flex gap-2">
-                    <button onClick={() => navigate(`/update-listing/${listing._id}`)} className="text-green-700"><Edit size={20} /></button>
+                    <Link to={`/update-listing/${listing._id}`}>
+                      <button className="text-green-700"><Edit size={20} /></button>
+                    </Link>
                     <button onClick={() => handleDeleteListing(listing._id)} className="text-red-700"><Trash2 size={20} /></button>
                   </div>
                 </div>
