@@ -318,7 +318,9 @@ export default function Profile() {
                     {listing.imageURLs && listing.imageURLs.length > 0 && (
                       <img src={listing.imageURLs[0]} alt="listing" className="w-16 h-16 object-cover rounded" />
                     )}
-                    <p className="font-medium break-words">{listing.name}</p>
+                    <Link to={`/listing/${listing._id}`}>
+                      <p className="font-medium break-words cursor-pointer hover:underline text-black">{listing.name}</p>
+                    </Link>
                   </div>
                   <div className="flex gap-2">
                     <Link to={`/update-listing/${listing._id}`}>

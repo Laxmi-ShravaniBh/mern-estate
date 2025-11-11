@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
+import { useSelector } from 'react-redux'
 import {
   SliderBtnGroup,
   ProgressSlider,
@@ -8,12 +9,14 @@ import {
   SliderWrapper,
 } from '../components/ui/progressive-carousel'
 import { Bed, Bath, Car, Sofa } from 'lucide-react'
+import Contact from '../components/ui/contact-sections'
 
 export default function Listing() {
   const [listing, setListing] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
   const params = useParams()
+  const { currentUser } = useSelector((state) => state.user);
 
   useEffect(() => {
     const fetchListing = async () => {
@@ -112,6 +115,7 @@ export default function Listing() {
           </div>
         </div>
       )}
+      {currentUser && listing && currentUser._id !== listing.userRef && <Contact listingId={listing._id} />}
     </main>
   );
 }
