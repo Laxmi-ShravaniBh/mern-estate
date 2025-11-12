@@ -23,6 +23,30 @@ export default function Contact({ listingId }) {
         e.preventDefault();
         setLoading(true);
         setError('');
+
+        // Validation
+        if (!formData.firstName.trim() || !formData.lastName.trim() || !formData.email.trim() || !formData.phone.trim() || !formData.message.trim()) {
+            setError('All fields are required.');
+            setLoading(false);
+            return;
+        }
+
+        // Email validation
+        const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+        if (!emailRegex.test(formData.email)) {
+            setError('Please enter a valid email address.');
+            setLoading(false);
+            return;
+        }
+
+        // Indian phone number validation: 10 digits, starting with 6,7,8,9
+        const phoneRegex = /^[6-9]\d{9}$/;
+        if (!phoneRegex.test(formData.phone)) {
+            setError('Please enter a valid 10-digit Indian mobile number starting with 6, 7, 8, or 9.');
+            setLoading(false);
+            return;
+        }
+
         try {
             const res = await fetch('/api/contact', {
                 method: 'POST',
@@ -131,17 +155,18 @@ export default function Contact({ listingId }) {
                                     <div className="relative mt-2">
                                         <div className="absolute inset-y-0 left-3 my-auto h-6 flex items-center border-r pr-2">
                                             <select className="text-sm bg-transparent outline-none rounded-lg h-full text-slate-500">
+                                                <option>IN</option>
                                                 <option>US</option>
                                                 <option>ES</option>
                                                 <option>MR</option>
                                             </select>
                                         </div>
                                         <input
-                                            type="number"
+                                            type="tel"
                                             name="phone"
                                             value={formData.phone}
                                             onChange={handleChange}
-                                            placeholder="+1 (555) 000-000"
+                                            placeholder="+91 9876543210"
                                             required
                                             className="w-full pl-[4.5rem] pr-3 py-2 appearance-none bg-transparent outline-none border focus:border-slate-500 shadow-sm rounded-lg text-slate-500"
                                         />
@@ -156,8 +181,10 @@ export default function Contact({ listingId }) {
                                         value={formData.message}
                                         onChange={handleChange}
                                         required 
+                                        maxLength="500"
                                         className="w-full mt-2 h-36 px-3 py-2 resize-none appearance-none bg-transparent outline-none border focus:border-slate-500 shadow-sm rounded-lg text-slate-500"
                                     ></textarea>
+                                    <p className="text-sm text-slate-500 mt-1 text-right">{formData.message.length}/500 characters</p>
                                 </div>
                                 <button
                                     type="submit"

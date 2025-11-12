@@ -31,11 +31,11 @@ export default function ListingItem({ listing }) {
             <p className='text-slate-500 mt-2 font-semibold '>
               {listing.offer && listing.discountPrice ? (
                 <>
-                  <del className='text-gray-400'>${listing.regularPrice.toLocaleString('en-US')}</del>{' '}
-                  ${(listing.regularPrice - listing.discountPrice).toLocaleString('en-US')}
+                  <del className='text-gray-400'>₹{listing.regularPrice.toLocaleString('en-IN')}</del>{' '}
+                  ₹{(listing.regularPrice - listing.discountPrice).toLocaleString('en-IN')}
                 </>
               ) : (
-                `$${listing.regularPrice.toLocaleString('en-US')}`
+                `₹${listing.regularPrice.toLocaleString('en-IN')}`
               )}
               {listing.type === 'rent' && ' / month'}
             </p>

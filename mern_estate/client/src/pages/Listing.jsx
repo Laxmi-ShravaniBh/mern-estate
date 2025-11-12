@@ -73,18 +73,20 @@ export default function Listing() {
                     </SliderWrapper>
                   ))}
                 </SliderContent>
-                <SliderBtnGroup className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex gap-2">
-                  {listing.imageURLs.map((_, index) => (
-                    <SliderBtn
-                      key={index}
-                      value={index.toString()}
-                      className="cursor-pointer"
-                      progressBarClass="bg-white h-full"
-                    >
-                      <span className="w-3 h-3 bg-white rounded-full opacity-70 hover:opacity-100 transition-opacity"></span>
-                    </SliderBtn>
-                  ))}
-                </SliderBtnGroup>
+                <div className="absolute bottom-2 sm:bottom-4 left-4 sm:left-1/2 transform sm:-translate-x-1/2 max-w-[calc(100%-2rem)] overflow-x-auto">
+                  <SliderBtnGroup className="flex gap-1 sm:gap-1">
+                    {listing.imageURLs.map((_, index) => (
+                      <SliderBtn
+                        key={index}
+                        value={index.toString()}
+                        className="cursor-pointer flex-shrink-0"
+                        progressBarClass="bg-white h-full"
+                      >
+                        <span className="w-2 h-2 sm:w-3 sm:h-3 bg-white rounded-full opacity-70 hover:opacity-100 transition-opacity"></span>
+                      </SliderBtn>
+                    ))}
+                  </SliderBtnGroup>
+                </div>
               </ProgressSlider>
             )
           )}
@@ -97,27 +99,27 @@ export default function Listing() {
               </span>
               {listing.offer && (
                 <span className="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-medium">
-                  ${listing.regularPrice.toLocaleString()} / month
+                  ₹{listing.regularPrice.toLocaleString('en-IN')} / month
                 </span>
               )}
             </div>
             <p className="text-gray-700 text-lg mb-4 ">{listing.description}</p>
-            <div className="flex gap-8 text-black mb-[-10px]">
+            <div className="flex gap-4 sm:gap-8 text-black mb-[-10px]">
               <div className="flex items-center gap-2">
                 <Bed size={20} className="text-black" />
-                <span>{listing.bedrooms} beds</span>
+                <span className="text-sm sm:text-base">{listing.bedrooms} beds</span>
               </div>
               <div className="flex items-center gap-2">
                 <Bath size={20} className="text-black" />
-                <span>{listing.bathrooms} baths</span>
+                <span className="text-sm sm:text-base">{listing.bathrooms} baths</span>
               </div>
               <div className="flex items-center gap-2">
                 <Car size={20} className="text-black" />
-                <span>{listing.parking ? 'Parking' : 'No Parking'}</span>
+                <span className="text-sm sm:text-base">{listing.parking ? 'Parking' : 'No Parking'}</span>
               </div>
               <div className="flex items-center gap-2">
                 <Sofa size={20} className="text-black" />
-                <span>{listing.furnished ? 'Furnished' : 'Not Furnished'}</span>
+                <span className="text-sm sm:text-base">{listing.furnished ? 'Furnished' : 'Not Furnished'}</span>
               </div>
             </div>
           </div>
