@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { uploadFile, getPublicUrl } from "../supabase";
-import { Eye, Trash2, X } from "lucide-react";
+import { Trash2 } from "lucide-react";
 
 export default function CreateListing() {
   const { currentUser } = useSelector((state) => state.user);
@@ -28,13 +28,6 @@ export default function CreateListing() {
   const [imageUrls, setImageUrls] = useState([]);
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState(false);
-  const [selectedImage, setSelectedImage] = useState(null);
-  const [selectedIndex, setSelectedIndex] = useState(null);
-
-  const handleEnlarge = (index) => {
-    setSelectedIndex(index);
-    setSelectedImage(imageUrls[index]);
-  };
 
   const handleDelete = (index) => {
     if (window.confirm("Are you sure you want to delete this image?")) {
@@ -310,16 +303,9 @@ export default function CreateListing() {
                   <img
                     src={url}
                     alt={`Image ${index + 1}`}
-                    className="w-20 h-20 sm:w-32 sm:h-32 object-cover rounded cursor-pointer"
-                    onClick={() => handleEnlarge(index)}
+                    className="w-20 h-20 sm:w-32 sm:h-32 object-cover rounded"
                   />
                   <div className="absolute inset-1 bg-black/40 opacity-0 sm:group-hover:opacity-100 flex items-center justify-center gap-1 transition-opacity rounded">
-                    <button
-                      onClick={() => handleEnlarge(index)}
-                      className="text-white hover:text-black hover:bg-white rounded p-1 transition-colors"
-                    >
-                      <Eye size={12} />
-                    </button>
                     <button
                       onClick={() => handleDelete(index)}
                       className="text-white hover:text-black hover:bg-white rounded p-1 transition-colors"
@@ -341,26 +327,6 @@ export default function CreateListing() {
           </button>
         </div>
       </form>
-      {selectedImage && (
-        <div
-          className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50"
-          onClick={() => setSelectedImage(null)}
-        >
-          <div className="relative max-w-4xl max-h-full p-4">
-            <img
-              src={selectedImage}
-              alt="Enlarged"
-              className="max-w-full max-h-full object-contain"
-            />
-            <button
-              onClick={() => setSelectedImage(null)}
-              className="absolute top-2 right-2 text-white bg-black bg-opacity-50 rounded-full p-2 hover:bg-opacity-75"
-            >
-              <X size={24} />
-            </button>
-          </div>
-        </div>
-      )}
     </main>
   );
 }

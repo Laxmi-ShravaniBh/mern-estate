@@ -54,31 +54,39 @@ export default function Listing() {
       {listing && !loading && !error && (
         <div>
           {listing.imageURLs && listing.imageURLs.length > 0 && (
-            <ProgressSlider vertical={false} activeSlider="0">
-              <SliderContent>
-                {listing.imageURLs.map((image, index) => (
-                  <SliderWrapper key={index} value={index.toString()}>
-                    <img
-                      src={image}
-                      alt={`${listing.name} - ${index + 1}`}
-                      className="rounded-xl h-[450px] w-full object-cover"
-                    />
-                  </SliderWrapper>
-                ))}
-              </SliderContent>
-              <SliderBtnGroup className="absolute bottom-0 h-fit text-white bg-black/40 backdrop-blur-md overflow-hidden grid grid-cols-4 rounded-md">
-                {listing.imageURLs.map((_, index) => (
-                  <SliderBtn
-                    key={index}
-                    value={index.toString()}
-                    className="text-center cursor-pointer p-3 border-r flex justify-center items-center"
-                    progressBarClass="bg-white h-full"
-                  >
-                    <span className="w-3 h-3 bg-white rounded-full opacity-70 hover:opacity-100 transition-opacity"></span>
-                  </SliderBtn>
-                ))}
-              </SliderBtnGroup>
-            </ProgressSlider>
+            listing.imageURLs.length === 1 ? (
+              <img
+                src={listing.imageURLs[0]}
+                alt={`${listing.name} - 1`}
+                className="rounded-xl h-[450px] w-full object-cover"
+              />
+            ) : (
+              <ProgressSlider vertical={false} activeSlider="0">
+                <SliderContent>
+                  {listing.imageURLs.map((image, index) => (
+                    <SliderWrapper key={index} value={index.toString()}>
+                      <img
+                        src={image}
+                        alt={`${listing.name} - ${index + 1}`}
+                        className="rounded-xl h-[450px] w-full object-cover"
+                      />
+                    </SliderWrapper>
+                  ))}
+                </SliderContent>
+                <SliderBtnGroup className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex gap-2">
+                  {listing.imageURLs.map((_, index) => (
+                    <SliderBtn
+                      key={index}
+                      value={index.toString()}
+                      className="cursor-pointer"
+                      progressBarClass="bg-white h-full"
+                    >
+                      <span className="w-3 h-3 bg-white rounded-full opacity-70 hover:opacity-100 transition-opacity"></span>
+                    </SliderBtn>
+                  ))}
+                </SliderBtnGroup>
+              </ProgressSlider>
+            )
           )}
           <div className="max-w-4xl mx-auto">
             <h1 className="text-3xl font-semibold mb-2 mt-6">{listing.name}</h1>
