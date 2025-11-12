@@ -17,7 +17,7 @@ export default function Search() {
     order: 'desc',
   })
 
-  console.log('Current listings:', listings);
+ 
 
   useEffect(() => {
     const urlParams = new URLSearchParams(location.search)
@@ -53,11 +53,13 @@ export default function Search() {
       setLoading(true)
       setShowMore(false)
       const searchQuery = urlParams.toString()
-      console.log('Fetching:', `/api/listing/get?${searchQuery}`)
       const res = await fetch(`/api/listing/get?${searchQuery}`)
-      console.log('Response status:', res.status)
       const data = await res.json()
-      console.log('Data received:', data)
+      if(data.length > 8){
+        setShowMore(true)
+      } else {
+        setShowMore(false)
+      }
       setListings(data)
       setLoading(false)
     };
