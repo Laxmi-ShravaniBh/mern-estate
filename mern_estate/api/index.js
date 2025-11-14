@@ -6,6 +6,7 @@ import authRouter from "./routes/auth.route.js";
 import cookieParser from "cookie-parser";
 import listingRouter from "./routes/listing.route.js";
 import contactRouter from "./routes/contact.route.js";
+import path from "path";
 
 dotenv.config();
 
@@ -14,6 +15,8 @@ mongoose.connect(process.env.MONGO).then(() => {
 }).catch((err) => {
     console.log(err)
 })
+
+const __dirname = path.resolve();
 
 const app = express();
 
@@ -29,6 +32,17 @@ app.use("/api/users", userRouter);
 app.use("/api/auth", authRouter);
 app.use("/api/listing", listingRouter);
 app.use("/api/contact", contactRouter);
+
+app.use(express.static(path.join(__dirname, '/client/build')));
+
+// Catch-all handler for client-side routing
+app.use((req, res, next) => {
+    if (!req.path.startsWith('/api')) {
+        res.sendFile(path.join(__dirname, '/client/build/index.html'));
+    } else {
+        next();
+    }
+});
 
 app.use((err, req, res, next) => {
     const statusCode = err.statusCode || 500;
