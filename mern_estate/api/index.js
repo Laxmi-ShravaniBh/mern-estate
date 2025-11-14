@@ -33,12 +33,12 @@ app.use("/api/auth", authRouter);
 app.use("/api/listing", listingRouter);
 app.use("/api/contact", contactRouter);
 
-app.use(express.static(path.join(__dirname, '/client/build')));
+app.use(express.static(path.join(__dirname, '../client/build')));
 
 // Catch-all handler for client-side routing
 app.use((req, res, next) => {
     if (!req.path.startsWith('/api')) {
-        res.sendFile(path.join(__dirname, '/client/build/index.html'));
+        res.sendFile(path.join(__dirname, '../client/build/index.html'));
     } else {
         next();
     }
